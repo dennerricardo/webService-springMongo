@@ -1,0 +1,62 @@
+
+
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
+
+@Service
+@Validated
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    public User getById(String id) {
+    	return repository.findOne(id);
+    }
+    
+	public List<User> listAllUsers() {
+		return repository.findAll();
+	}
+	
+    @Transactional
+    public User save(@NotNull User usuario) {
+    	
+        User existing = repository.findByName(usuario.getName());
+
+        if(existing == null)
+        	existing = repository.save(usuario);
+        
+        return existing;
+    }
+    
+    @Transactional
+    public void remove(@NotNull User  usuario) {
+    	User existing = repository.findOne(usuario.getId());
+    	if(existing != null) {
+    		repository.delete(usuario);
+    	}
+    	
+    }
+
+	public UserRepository getRepository() {
+		return repository;
+	}
+	
+	@Transactional
+	public User update(@NotNull User usuario) {
+		User existing = repository.findOne(usuario.getId());
+    	if(existing != null) {
+    		repository.delete(usuario);
+    		existing = repository.save(usuario);
+    	}
+    	
+    	return existing;
+}
+	}
+}
